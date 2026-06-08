@@ -19,17 +19,27 @@
                 Informations Enseignant
             </h3>
             
+            @php
+                $defaultTeacher = old('teacher_name');
+                if (!$defaultTeacher && auth()->check()) {
+                    if (str_contains(strtolower(auth()->user()->name), 'fatima')) {
+                        $defaultTeacher = 'Mme. Tazi Fatima';
+                    } elseif (str_contains(strtolower(auth()->user()->name), 'youssef')) {
+                        $defaultTeacher = 'M. Amrani Youssef';
+                    }
+                }
+            @endphp
             <div>
                 <label for="teacher_name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nom complet de l'enseignant <span class="text-red-500">*</span></label>
                 <select name="teacher_name" id="teacher_name" required
                         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm @error('teacher_name') border-red-300 focus:ring-red-500/20 focus:border-red-500 @enderror bg-white">
                     <option value="">-- Choisir un enseignant --</option>
-                    <option value="M. Alaoui Rachid" {{ old('teacher_name') == 'M. Alaoui Rachid' ? 'selected' : '' }}>M. Alaoui Rachid</option>
-                    <option value="M. Bensalah Hamid" {{ old('teacher_name') == 'M. Bensalah Hamid' ? 'selected' : '' }}>M. Bensalah Hamid</option>
-                    <option value="M. El Idrissi Ahmed" {{ old('teacher_name') == 'M. El Idrissi Ahmed' ? 'selected' : '' }}>M. El Idrissi Ahmed</option>
-                    <option value="Mme. Tazi Fatima" {{ old('teacher_name') == 'Mme. Tazi Fatima' ? 'selected' : '' }}>Mme. Tazi Fatima</option>
-                    <option value="M. Amrani Youssef" {{ old('teacher_name') == 'M. Amrani Youssef' ? 'selected' : '' }}>M. Amrani Youssef</option>
-                    <option value="Mme. Cherkaoui Sanae" {{ old('teacher_name') == 'Mme. Cherkaoui Sanae' ? 'selected' : '' }}>Mme. Cherkaoui Sanae</option>
+                    <option value="M. Alaoui Rachid" {{ $defaultTeacher == 'M. Alaoui Rachid' ? 'selected' : '' }}>M. Alaoui Rachid</option>
+                    <option value="M. Bensalah Hamid" {{ $defaultTeacher == 'M. Bensalah Hamid' ? 'selected' : '' }}>M. Bensalah Hamid</option>
+                    <option value="M. El Idrissi Ahmed" {{ $defaultTeacher == 'M. El Idrissi Ahmed' ? 'selected' : '' }}>M. El Idrissi Ahmed</option>
+                    <option value="Mme. Tazi Fatima" {{ $defaultTeacher == 'Mme. Tazi Fatima' ? 'selected' : '' }}>Mme. Tazi Fatima</option>
+                    <option value="M. Amrani Youssef" {{ $defaultTeacher == 'M. Amrani Youssef' ? 'selected' : '' }}>M. Amrani Youssef</option>
+                    <option value="Mme. Cherkaoui Sanae" {{ $defaultTeacher == 'Mme. Cherkaoui Sanae' ? 'selected' : '' }}>Mme. Cherkaoui Sanae</option>
                 </select>
                 @error('teacher_name')
                     <p class="text-xs font-semibold text-red-600 mt-1.5">{{ $message }}</p>
