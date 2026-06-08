@@ -107,11 +107,18 @@
                                     <td class="px-6 py-4">
                                         @if($commande->isValidated())
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                                 Validée
                                             </span>
-                                        @else
+                                        @elseif($commande->isShipped())
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                                                 Expédiée
+                                            </span>
+                                        @elseif($commande->isDelivered())
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                                Livrée ✓
                                             </span>
                                         @endif
                                     </td>
@@ -130,30 +137,15 @@
                                                         Expédier
                                                     </button>
                                                 </form>
-
-                                                {{-- Transition to Livre --}}
-                                                <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-block">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="livre">
-                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition-all duration-150 shadow-sm hover:shadow">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        Livrer
-                                                    </button>
-                                                </form>
                                             @elseif($commande->isShipped())
-                                                {{-- Transition to Livre --}}
-                                                <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-block">
-                                                    @csrf
-                                                    <input type="hidden" name="status" value="livre">
-                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition-all duration-150 shadow-sm hover:shadow">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        Livrer
-                                                    </button>
-                                                </form>
+                                                <span class="text-xs text-slate-400 italic">En attente de réception par le Chef</span>
+                                            @elseif($commande->isDelivered())
+                                                <span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Boucle fermée
+                                                </span>
                                             @endif
                                         </div>
                                     </td>

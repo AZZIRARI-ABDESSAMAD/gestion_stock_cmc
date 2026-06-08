@@ -124,9 +124,9 @@ class ChefEspaceController extends Controller
             abort(403, 'Accès non autorisé.');
         }
 
-        // Only allow marking as received if it's shipped or validated
-        if (!$commande->isShipped() && !$commande->isValidated()) {
-            return redirect()->back()->with('error', "Cette commande ne peut pas être marquée comme reçue dans son état actuel.");
+        // Only allow marking as received if it's been shipped (expediee)
+        if (!$commande->isShipped()) {
+            return redirect()->back()->with('error', "Cette commande ne peut pas être marquée comme reçue. Elle doit d'abord être expédiée par le magasinier.");
         }
 
         $commande->update(['status' => 'livre']);

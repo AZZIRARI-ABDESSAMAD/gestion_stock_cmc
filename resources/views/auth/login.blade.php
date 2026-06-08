@@ -13,7 +13,7 @@
         <!-- Email Address -->
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+            <input id="email" type="email" name="email" value="{{ old('email', 'chef1@cmc.ma') }}" required autofocus autocomplete="username"
                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all duration-200"
                    placeholder="votre@email.com">
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -22,7 +22,7 @@
         <!-- Password -->
         <div class="mt-4">
             <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-            <input id="password" type="password" name="password" required autocomplete="current-password"
+            <input id="password" type="password" name="password" value="password" required autocomplete="current-password"
                    class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all duration-200"
                    placeholder="••••••••">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
