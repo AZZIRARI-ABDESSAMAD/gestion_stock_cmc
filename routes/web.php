@@ -28,6 +28,7 @@ Route::middleware(['auth', 'role:chef_espace'])->prefix('chef-espace')->name('ch
     Route::get('/dashboard', [ChefEspaceController::class, 'dashboard'])->name('dashboard');
     Route::get('/commandes/creer', [ChefEspaceController::class, 'createCommande'])->name('commandes.create');
     Route::post('/commandes', [ChefEspaceController::class, 'storeCommande'])->name('commandes.store');
+    Route::post('/commandes/{commande}/status', [ChefEspaceController::class, 'updateStatus'])->name('commandes.status');
     Route::get('/historique', [ChefEspaceController::class, 'history'])->name('history');
 });
 

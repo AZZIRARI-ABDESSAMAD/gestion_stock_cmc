@@ -113,4 +113,24 @@ class ChefEspaceController extends Controller
 
         return view('chef_espace.history', compact('commandes'));
     }
+
+    /**
+     * Update order status to 'livre' when Chef Espace receives the items.
+     */
+    public function updateStatus(Request $request, Commande $commande)
+    {
+        // Check ownership
+        if ($commande->user_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        // Only allow marking as received if it's shipped or validated
+        if (!$commande->isShipped() && !$commande->isValidated()) {
+            return redirect()->back()->with('error', "Cette commande ne peut pas être marquée comme reçue dans son état actuel.");
+        }
+
+        $commande->update(['status' => 'livre']);
+
+        return redirect()->back()->with('success', "La commande {$commande->reference} a été marquée comme livrée (reçue) avec succès.");
+    }
 }

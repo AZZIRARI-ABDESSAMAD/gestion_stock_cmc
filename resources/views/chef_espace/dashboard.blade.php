@@ -94,15 +94,31 @@
                                         En cours
                                     </span>
                                 @elseif($order->isValidated())
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        Validée
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Validée
+                                        </span>
+                                        <form action="{{ route('chef_espace.commandes.status', $order->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-all shadow-sm hover:-translate-y-0.5 duration-100">
+                                                Reçue ✓
+                                            </button>
+                                        </form>
+                                    </div>
                                 @elseif($order->isShipped())
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                        Expédiée
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                            Expédiée
+                                        </span>
+                                        <form action="{{ route('chef_espace.commandes.status', $order->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-all shadow-sm hover:-translate-y-0.5 duration-100">
+                                                Reçue ✓
+                                            </button>
+                                        </form>
+                                    </div>
                                 @elseif($order->isDelivered())
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
