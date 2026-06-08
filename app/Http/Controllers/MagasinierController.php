@@ -35,8 +35,6 @@ class MagasinierController extends Controller
         ));
     }
 
-    /* ─── Category CRUD ─── */
-
     public function categoryIndex()
     {
         $categories = Category::withCount('products')
@@ -208,7 +206,7 @@ class MagasinierController extends Controller
         try {
             foreach ($request->input('quantities') as $productId => $qtyValide) {
                 $product = Product::findOrFail($productId);
-                
+
                 // Fetch the pivot to verify the ordered quantity
                 $pivot = $commande->products()->where('product_id', $productId)->first()->pivot;
                 $qtyOrdered = $pivot->quantite_commander;
@@ -237,7 +235,6 @@ class MagasinierController extends Controller
             DB::commit();
             return redirect()->route('magasinier.orders.index')
                 ->with('success', "La commande {$commande->reference} a été validée et le stock mis à jour.");
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
