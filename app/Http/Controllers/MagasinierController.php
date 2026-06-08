@@ -157,7 +157,7 @@ class MagasinierController extends Controller
             ->get();
 
         $activeOrders = Commande::with(['user.space', 'products'])
-            ->whereIn('status', ['valide', 'expediee'])
+            ->whereIn('status', ['valide', 'expediee', 'livre'])
             ->orderBy('updated_at', 'desc')
             ->get();
 
