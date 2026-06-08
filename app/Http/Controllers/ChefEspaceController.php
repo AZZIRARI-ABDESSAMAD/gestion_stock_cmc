@@ -15,6 +15,7 @@ class ChefEspaceController extends Controller
      */
     public function dashboard()
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
         // Statistics
@@ -106,7 +107,10 @@ class ChefEspaceController extends Controller
      */
     public function history()
     {
-        $commandes = auth()->user()->commandes()
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        $commandes = $user->commandes()
             ->with('products')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
