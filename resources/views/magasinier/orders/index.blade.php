@@ -116,20 +116,46 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-flex items-center gap-2">
-                                            @csrf
-                                            <select name="status" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all bg-white font-medium text-slate-750">
-                                                @if($commande->isValidated())
-                                                    <option value="expediee">Expédiée</option>
-                                                    <option value="livre">Livrée</option>
-                                                @elseif($commande->isShipped())
-                                                    <option value="livre">Livrée</option>
-                                                @endif
-                                            </select>
-                                            <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-colors">
-                                                Mettre à jour
-                                            </button>
-                                        </form>
+                                        <div class="flex items-center justify-center gap-2">
+                                            @if($commande->isValidated())
+                                                {{-- Transition to Expediee --}}
+                                                <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="expediee">
+                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg transition-all duration-150 shadow-sm hover:shadow">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/>
+                                                        </svg>
+                                                        Expédier
+                                                    </button>
+                                                </form>
+
+                                                {{-- Transition to Livre --}}
+                                                <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="livre">
+                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition-all duration-150 shadow-sm hover:shadow">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Livrer
+                                                    </button>
+                                                </form>
+                                            @elseif($commande->isShipped())
+                                                {{-- Transition to Livre --}}
+                                                <form action="{{ route('magasinier.orders.status', $commande->id) }}" method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="livre">
+                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg transition-all duration-150 shadow-sm hover:shadow">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Livrer
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
