@@ -11,13 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('spaces', function (Blueprint $table) {
+            $table->id();
+            $table->string('name_espace');
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('chef_pole'); // 'chef_pole' or 'magasinier'
+            $table->string('role'); // e.g., 'chef_espace', 'magasinier'
+            $table->string('phone')->nullable();
+            $table->foreignId('space_id')->nullable()->constrained('spaces')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -46,5 +54,6 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');
+        Schema::dropIfExists('spaces');
     }
 };

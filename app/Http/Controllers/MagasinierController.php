@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Demande;
+use App\Models\Category;
+use App\Models\Commande;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,194 +11,271 @@ use Illuminate\Support\Facades\DB;
 class MagasinierController extends Controller
 {
     /**
-     * Display the magasinier dashboard.
+     * Dashboard: general statistics and recent pending orders.
      */
     public function dashboard()
     {
-        $totalProcessed = Demande::where('status', 'traité')->count();
-        $pendingCount = Demande::where('status', 'en_attente')->count();
+        $totalCategories = Category::count();
         $totalProducts = Product::count();
         $lowStockCount = Product::where('quantity', '<', 5)->count();
+        $pendingCount = Commande::where('status', 'on cours')->count();
 
-        $recentPending = Demande::where('status', 'en_attente')
-            ->with(['user', 'products'])
-            ->latest()
+        $recentPending = Commande::with(['user.space', 'products'])
+            ->where('status', 'on cours')
+            ->orderBy('created_at', 'asc')
             ->take(5)
             ->get();
 
         return view('magasinier.dashboard', compact(
-            'totalProcessed',
-            'pendingCount',
+            'totalCategories',
             'totalProducts',
             'lowStockCount',
+            'pendingCount',
             'recentPending'
         ));
     }
 
-    /**
-     * Display the list of products in stock.
-     */
+    /* ─── Category CRUD ─── */
+
+    public function categoryIndex()
+    {
+        $categories = Category::withCount('products')
+            ->orderBy('title')
+            ->paginate(10);
+        return view('magasinier.categories.index', compact('categories'));
+    }
+
+    public function categoryCreate()
+    {
+        return view('magasinier.categories.form', ['category' => new Category()]);
+    }
+
+    public function categoryStore(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        Category::create($data);
+        return redirect()->route('magasinier.categories.index')
+            ->with('success', 'Catégorie créée avec succès.');
+    }
+
+    public function categoryEdit(Category $category)
+    {
+        return view('magasinier.categories.form', compact('category'));
+    }
+
+    public function categoryUpdate(Request $request, Category $category)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $category->update($data);
+        return redirect()->route('magasinier.categories.index')
+            ->with('success', 'Catégorie modifiée avec succès.');
+    }
+
+    public function categoryDestroy(Category $category)
+    {
+        $category->delete();
+        return redirect()->route('magasinier.categories.index')
+            ->with('success', 'Catégorie supprimée avec succès.');
+    }
+
+    /* ─── Product CRUD (Stock) ─── */
+
     public function stockIndex()
     {
-        $products = Product::orderBy('name')->paginate(15);
+        $products = Product::with('category')
+            ->orderBy('title')
+            ->paginate(15);
         return view('magasinier.stock', compact('products'));
     }
 
-    /**
-     * Show the form to create a new product.
-     */
     public function stockCreate()
     {
-        $product = new Product(); // For empty state form binding
-        return view('magasinier.stock_form', compact('product'));
+        $categories = Category::orderBy('title')->get();
+        return view('magasinier.stock_form', [
+            'product' => new Product(),
+            'categories' => $categories
+        ]);
     }
 
-    /**
-     * Store a new product in stock.
-     */
     public function stockStore(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name',
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'quantity' => 'required|integer|min:0',
-        ], [
-            'name.required' => 'Le nom du produit est requis.',
-            'name.unique' => 'Ce produit existe déjà dans le stock.',
-            'quantity.required' => 'La quantité est requise.',
-            'quantity.min' => 'La quantité ne peut pas être négative.',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        Product::create($request->only('name', 'quantity'));
-
+        Product::create($data);
         return redirect()->route('magasinier.stock.index')
-            ->with('success', 'Produit ajouté au stock avec succès.');
+            ->with('success', 'Produit ajouté avec succès.');
     }
 
-    /**
-     * Show the form to edit a product.
-     */
     public function stockEdit(Product $product)
     {
-        return view('magasinier.stock_form', compact('product'));
+        $categories = Category::orderBy('title')->get();
+        return view('magasinier.stock_form', compact('product', 'categories'));
     }
 
-    /**
-     * Update a product in stock.
-     */
     public function stockUpdate(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name,' . $product->id,
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'quantity' => 'required|integer|min:0',
-        ], [
-            'name.required' => 'Le nom du produit est requis.',
-            'name.unique' => 'Ce produit existe déjà dans le stock.',
-            'quantity.required' => 'La quantité est requise.',
-            'quantity.min' => 'La quantité ne peut pas être négative.',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $product->update($request->only('name', 'quantity'));
-
+        $product->update($data);
         return redirect()->route('magasinier.stock.index')
             ->with('success', 'Produit mis à jour avec succès.');
     }
 
-    /**
-     * Delete a product from stock.
-     */
     public function stockDestroy(Product $product)
     {
         $product->delete();
         return redirect()->route('magasinier.stock.index')
-            ->with('success', 'Produit supprimé du stock avec succès.');
+            ->with('success', 'Produit supprimé du stock.');
+    }
+
+    /* ─── Order Management ─── */
+
+    /**
+     * List all pending and active orders.
+     */
+    public function ordersIndex()
+    {
+        $pendingOrders = Commande::with(['user.space', 'products'])
+            ->where('status', 'on cours')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $activeOrders = Commande::with(['user.space', 'products'])
+            ->whereIn('status', ['valide', 'expediee'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('magasinier.orders.index', compact('pendingOrders', 'activeOrders'));
     }
 
     /**
-     * Display a listing of pending demands.
+     * Show validation form for a single order.
      */
-    public function demandesIndex()
+    public function orderShow(Commande $commande)
     {
-        $demandes = Demande::where('status', 'en_attente')
-            ->with(['user', 'products'])
-            ->latest()
-            ->paginate(10);
-
-        return view('magasinier.pending', compact('demandes'));
-    }
-
-    /**
-     * Show the form to approve a specific demand.
-     */
-    public function demandesApprove(Demande $demande)
-    {
-        if ($demande->status !== 'en_attente') {
-            return redirect()->route('magasinier.demandes.index')
-                ->with('error', 'Cette demande a déjà été traitée.');
+        if (!$commande->isOnCours()) {
+            return redirect()->route('magasinier.orders.index')
+                ->with('error', "Cette commande a déjà été traitée.");
         }
 
-        $demande->load('products');
-        return view('magasinier.approve', compact('demande'));
+        $commande->load(['user.space', 'products']);
+        return view('magasinier.orders.show', compact('commande'));
     }
 
     /**
-     * Process/Approve a demand, updating product stock atomically.
+     * Process validation/rejection flow.
      */
-    public function demandesProcess(Request $request, Demande $demande)
+    public function orderProcess(Request $request, Commande $commande)
     {
-        if ($demande->status !== 'en_attente') {
-            return redirect()->route('magasinier.demandes.index')
-                ->with('error', 'Cette demande a déjà été traitée.');
+        if (!$commande->isOnCours()) {
+            return redirect()->route('magasinier.orders.index')
+                ->with('error', 'Cette commande a déjà été traitée.');
         }
 
+        $action = $request->input('action'); // 'valider' or 'refuser'
+
+        if ($action === 'refuser') {
+            $commande->update(['status' => 'refuser']);
+            return redirect()->route('magasinier.orders.index')
+                ->with('success', "La commande {$commande->reference} a été refusée.");
+        }
+
+        // Validate quantities for 'valider' action
         $request->validate([
             'quantities' => 'required|array',
             'quantities.*' => 'required|integer|min:0',
         ]);
 
-        DB::transaction(function () use ($request, $demande) {
-            foreach ($demande->products as $product) {
-                $productId = $product->id;
-                $requestedQty = $product->pivot->quantite_demandee;
+        DB::beginTransaction();
+        try {
+            foreach ($request->input('quantities') as $productId => $qtyValide) {
+                $product = Product::findOrFail($productId);
                 
-                // Get the input approved quantity
-                $inputQty = isset($request->quantities[$productId]) ? (int)$request->quantities[$productId] : 0;
-                
-                // Force lock the product row to avoid race conditions
-                $dbProduct = Product::where('id', $productId)->lockForUpdate()->first();
-                $availableStock = $dbProduct->quantity;
-                
-                // Auto-cap quantity to min(stock, requested, input)
-                $approvedQty = min($inputQty, $requestedQty, $availableStock);
-                
-                // Deduct stock
-                $dbProduct->quantity = $availableStock - $approvedQty;
-                $dbProduct->save();
+                // Fetch the pivot to verify the ordered quantity
+                $pivot = $commande->products()->where('product_id', $productId)->first()->pivot;
+                $qtyOrdered = $pivot->quantite_commander;
 
-                // Update pivot table
-                $demande->products()->updateExistingPivot($productId, [
-                    'quantite_approuvee' => $approvedQty,
+                // Validate that the approved quantity is not higher than ordered or stock
+                if ($qtyValide > $qtyOrdered) {
+                    throw new \Exception("La quantité validée pour {$product->title} ({$qtyValide}) dépasse la quantité demandée ({$qtyOrdered}).");
+                }
+
+                if ($qtyValide > $product->quantity) {
+                    throw new \Exception("La quantité validée pour {$product->title} ({$qtyValide}) dépasse le stock disponible ({$product->quantity}).");
+                }
+
+                // Deduct from product stock
+                $product->decrement('quantity', $qtyValide);
+
+                // Update the pivot table
+                $commande->products()->updateExistingPivot($productId, [
+                    'quantite_valide' => $qtyValide,
                 ]);
             }
 
-            // Update status of Demande
-            $demande->status = 'traité';
-            $demande->save();
-        });
+            // Update status to 'valide'
+            $commande->update(['status' => 'valide']);
 
-        return redirect()->route('magasinier.dashboard')
-            ->with('success', 'La demande a été traitée et le stock a été mis à jour.');
+            DB::commit();
+            return redirect()->route('magasinier.orders.index')
+                ->with('success', "La commande {$commande->reference} a été validée et le stock mis à jour.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
-     * Display a listing of all global processed demands.
+     * Update validated orders status (expediee -> livre).
      */
-    public function history()
+    public function updateStatus(Request $request, Commande $commande)
     {
-        $demandes = Demande::where('status', 'traité')
-            ->with(['user', 'products'])
-            ->latest()
+        $request->validate([
+            'status' => 'required|in:expediee,livre',
+        ]);
+
+        if (!$commande->isValidated() && !$commande->isShipped()) {
+            return redirect()->route('magasinier.orders.index')
+                ->with('error', "Le statut de cette commande ne peut pas être modifié.");
+        }
+
+        $commande->update(['status' => $request->input('status')]);
+
+        return redirect()->route('magasinier.orders.index')
+            ->with('success', "Le statut de la commande {$commande->reference} a été mis à jour.");
+    }
+
+    /**
+     * Global history of all processed (validated, refused, shipped, delivered) orders.
+     */
+    public function globalHistory()
+    {
+        $commandes = Commande::with(['user.space', 'products'])
+            ->whereIn('status', ['valide', 'refuser', 'expediee', 'livre'])
+            ->orderBy('updated_at', 'desc')
             ->paginate(15);
 
-        return view('magasinier.history', compact('demandes'));
+        return view('magasinier.orders.history', compact('commandes'));
     }
 }

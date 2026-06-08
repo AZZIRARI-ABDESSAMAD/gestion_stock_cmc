@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('magasinier.dashboard');
         }
 
-        return redirect()->route('chef_pole.dashboard');
+        return redirect()->route('chef_espace.dashboard');
     }
 
     /**

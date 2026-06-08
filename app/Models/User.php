@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -20,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone',
+        'space_id',
     ];
 
     /**
@@ -45,16 +49,33 @@ class User extends Authenticatable
         ];
     }
 
-    public function demandes()
+    /**
+     * Get the space this user belongs to.
+     */
+    public function space(): BelongsTo
     {
-        return $this->hasMany(Demande::class);
+        return $this->belongsTo(Space::class);
     }
 
-    public function isChefPole(): bool
+    /**
+     * Get the orders created by the user.
+     */
+    public function commandes(): HasMany
     {
-        return $this->role === 'chef_pole';
+        return $this->hasMany(Commande::class);
     }
 
+    /**
+     * Check if the user is a Chef de l'espace.
+     */
+    public function isChefEspace(): bool
+    {
+        return $this->role === 'chef_espace';
+    }
+
+    /**
+     * Check if the user is a Magasinier.
+     */
     public function isMagasinier(): bool
     {
         return $this->role === 'magasinier';

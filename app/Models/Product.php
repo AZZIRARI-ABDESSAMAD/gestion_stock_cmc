@@ -4,24 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'quantity',
-    ];
+    protected $fillable = ['title', 'description', 'quantity', 'category_id'];
 
-    public function demandes()
+    /**
+     * Get the category of the product.
+     */
+    public function category(): BelongsTo
     {
-        return $this->belongsToMany(Demande::class)
-            ->withPivot('quantite_demandee', 'quantite_approuvee');
+        return $this->belongsTo(Category::class);
     }
 
     /**
-     * Check if product is low in stock.
+     * Get the orders containing this product.
+     */
+    public function commandes(): BelongsToMany
+    {
+        return $this->belongsToMany(Commande::class)
+                    ->withPivot('quantite_commander', 'quantite_valide');
+    }
+
+    /**
+     * Determine if stock is critically low.
      */
     public function isLowStock(): bool
     {

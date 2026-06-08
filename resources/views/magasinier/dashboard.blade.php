@@ -7,117 +7,132 @@
     {{-- Header --}}
     <div>
         <h2 class="text-2xl font-bold text-slate-800">Espace Magasinier</h2>
-        <p class="text-sm text-slate-500">Gérez le stock de produits et traitez les demandes de matériel.</p>
+        <p class="text-sm text-slate-500">Gérez l'inventaire des produits, les catégories et validez les commandes des espaces.</p>
     </div>
 
     {{-- Stats Cards Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-650 font-bold">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-500">Catégories</p>
+                <h3 class="text-2xl font-bold text-slate-800">{{ $totalCategories }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-slate-500">Total Articles</p>
+                <p class="text-sm font-medium text-slate-500">Produits au catalogue</p>
                 <h3 class="text-2xl font-bold text-slate-800">{{ $totalProducts }}</h3>
             </div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-600">
+            <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-slate-500">Stock Critique</p>
+                <p class="text-sm font-medium text-slate-500">Stock Critique (&lt; 5)</p>
                 <h3 class="text-2xl font-bold text-slate-800">{{ $lowStockCount }}</h3>
             </div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-slate-500">Demandes en attente</p>
+                <p class="text-sm font-medium text-slate-500">Commandes en attente</p>
                 <h3 class="text-2xl font-bold text-slate-800">{{ $pendingCount }}</h3>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-slate-500">Demandes traitées</p>
-                <h3 class="text-2xl font-bold text-slate-800">{{ $totalProcessed }}</h3>
             </div>
         </div>
     </div>
 
-    {{-- Quick Actions Grid --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- Recent Pending Requests --}}
-        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col overflow-hidden">
-            <div class="px-6 py-5 border-b border-slate-200/60 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-slate-800">Demandes en attente</h3>
-                <a href="{{ route('magasinier.demandes.index') }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">Voir tout</a>
-            </div>
+    {{-- Layout Body --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {{-- Recent Pending Orders --}}
+        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2 overflow-hidden flex flex-col justify-between">
+            <div>
+                <div class="px-6 py-5 border-b border-slate-200/60 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-800">Commandes en cours</h3>
+                    <a href="{{ route('magasinier.orders.index') }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">Gérer les commandes</a>
+                </div>
 
-            <div class="flex-1 overflow-y-auto max-h-96">
-                @if($recentPending->isEmpty())
-                    <div class="p-8 text-center text-slate-500">
-                        <p class="text-sm">Aucune demande en attente.</p>
-                    </div>
-                @else
-                    <div class="divide-y divide-slate-100">
-                        @foreach($recentPending as $demande)
-                            <div class="p-5 hover:bg-slate-50/50 transition-colors flex items-center justify-between gap-4">
+                <div class="divide-y divide-slate-100">
+                    @if($recentPending->isEmpty())
+                        <div class="p-8 text-center text-slate-400">
+                            Aucune commande en attente de validation.
+                        </div>
+                    @else
+                        @foreach($recentPending as $commande)
+                            <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="font-bold text-slate-800">#{{ $demande->id }}</span>
-                                        <span class="text-xs text-slate-400 font-semibold">{{ $demande->created_at->format('d/m/Y H:i') }}</span>
+                                        <span class="font-bold text-slate-800">{{ $commande->reference }}</span>
+                                        <span class="text-xs text-slate-400 font-semibold">{{ $commande->created_at->format('d/m/Y H:i') }}</span>
                                     </div>
-                                    <p class="text-sm font-medium text-slate-700 mt-1">Enseignant : {{ $demande->teacher_name }}</p>
-                                    <p class="text-xs text-slate-500 mt-0.5">Par : {{ $demande->user->name }} (Chef de Pôle)</p>
+                                    <p class="text-xs text-indigo-650 font-bold mt-1">
+                                        Par : {{ $commande->user->name }} (Pôle : {{ $commande->user->space->name_espace ?? 'N/A' }})
+                                    </p>
+                                    <div class="mt-2 space-y-1">
+                                        @foreach($commande->products->take(2) as $product)
+                                            <p class="text-xs text-slate-500 flex items-center gap-1">
+                                                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                {{ $product->title }} <span class="font-semibold text-slate-700">(Demandé: {{ $product->pivot->quantite_commander }})</span>
+                                            </p>
+                                        @endforeach
+                                        @if($commande->products->count() > 2)
+                                            <p class="text-xs text-slate-400 font-medium italic">+ {{ $commande->products->count() - 2 }} autre(s) produit(s)...</p>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div>
-                                    <a href="{{ route('magasinier.demandes.approve', $demande) }}"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-all duration-200 hover:-translate-y-0.5 shadow-sm shadow-indigo-600/10">
-                                        Traiter
+                                <div class="flex items-center">
+                                    <a href="{{ route('magasinier.orders.show', $commande->id) }}" 
+                                       class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs rounded-xl border border-indigo-100/40 transition-colors">
+                                        Traiter / Valider
                                     </a>
                                 </div>
                             </div>
                         @endforeach
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
 
-        {{-- Shortcuts & Quick Actions --}}
+        {{-- Low Stock Alert Box --}}
         <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Actions Rapides</h3>
+            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 text-rose-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Alertes de Stock
+            </h3>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="{{ route('magasinier.stock.create') }}"
-                   class="p-4 rounded-xl border border-slate-200/60 hover:border-indigo-500 hover:bg-indigo-50/20 flex flex-col gap-3 group transition-all">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 flex items-center justify-center text-indigo-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800">Ajouter un produit</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">Enregistrer un nouvel article en stock.</p>
-                    </div>
-                </a>
+            <p class="text-xs text-slate-400">Les articles suivants ont un niveau de stock critique et doivent être réapprovisionnés.</p>
 
-                <a href="{{ route('magasinier.stock.index') }}"
-                   class="p-4 rounded-xl border border-slate-200/60 hover:border-indigo-500 hover:bg-indigo-50/20 flex flex-col gap-3 group transition-all">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 flex items-center justify-center text-indigo-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800">Voir le stock</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">Consulter et modifier l'inventaire actuel.</p>
-                    </div>
-                </a>
+            <div class="space-y-3 max-h-[280px] overflow-y-auto pr-1">
+                @php
+                    $lowStockProducts = \App\Models\Product::with('category')->where('quantity', '<', 5)->orderBy('quantity', 'asc')->take(5)->get();
+                @endphp
+
+                @if($lowStockProducts->isEmpty())
+                    <p class="text-sm text-emerald-600 font-semibold text-center py-6">Aucune alerte de stock. Tout est correct !</p>
+                @else
+                    @foreach($lowStockProducts as $product)
+                        <div class="p-3 bg-rose-50/50 border border-rose-100/60 rounded-xl flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-800 truncate">{{ $product->title }}</p>
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wide">{{ $product->category->title }}</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-lg whitespace-nowrap">
+                                Stock: {{ $product->quantity }}
+                            </span>
+                        </div>
+                    @endforeach
+                @endif
             </div>
         </div>
     </div>
